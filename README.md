@@ -1,13 +1,13 @@
 # dbhopper
 Utility for migration of databases.
 
-# Requirements
+## Requirements
 - Install MySQL client tools (e.g., mysqldump)
 
-# Installation
+## Installation
 Download the pre-released binaries from https://github.com/MarouaneBouaricha/dbhopper/releases
 
-# How to
+## How to
 
 ```shell
 A command-line tool to dump MySQL databases with options to rename the database in the dump file and delete the database after dumping.
@@ -27,26 +27,26 @@ Flags:
   -u, --username string   MySQL username (optional, falls back to MYSQL_USERNAME environment variable)
 ```
 
-# Connect to MYSQL
-## Using cli
+## Connect to MYSQL
+### Using cli
 ```shell
 dbhopper -h localhost -u root -p mysecretpassword
 ```
-## Using environment variables
+### Using environment variables
 ```shell
 export MYSQL_USERNAME=root
 export MYSQL_PASSWORD=secret
 export MYSQL_HOST=localhost
 ```
 
-# Examples
-## one database
+## Examples
+### one database
 This will dump the database named "mydb"
 ```shell
 dbhopper -h 172.17.0.1 -u root -p p_ssW0rd -n mydb
 ```
 
-## multiple databases using a file
+### multiple databases using a file
 This will dump all the databases in side the file **databases.txt** and put the generated .sql files inside **data** folder
 ```shell
 dbhopper -o data -f databases.txt
@@ -54,15 +54,21 @@ dbhopper -o data -f databases.txt
 > [!NOTE]  
 > "-o" option is used for destination folder
 
-## rename dumped databases
+### rename dumped databases
 ```shell
 dbhopper -r -o data -f list.txt
 ```
 
-## delete databases after dump
+### delete databases after dump
 ```shell
 dbhopper -d -o data -f list.txt
 ```
 
 > [!WARNING]  
 > The "-d" option will drop the databases after dump
+
+## Sample output
+```shell
+2025/02/24 14:53:44 INFO Dump created successfully for database db6: data/db1.sql
+2025/02/24 14:53:44 INFO Database renamed in dump file with prefix 'R4_' for database db6: data/db1.sq
+```
