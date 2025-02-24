@@ -1,6 +1,6 @@
 version: 2
 builds:
-  - binary: qcli
+  - binary: dbhopper
     main: ./
     goos:
       - linux
@@ -10,7 +10,7 @@ builds:
       - amd64
       - arm
       - arm64
-      
+
     env:
       - CGO_ENABLED=0
     flags:
