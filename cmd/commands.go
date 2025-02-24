@@ -7,6 +7,8 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/charmbracelet/log"
 )
 
 func readDatabases(filePath string) ([]string, error) {
@@ -39,27 +41,27 @@ func processDatabase(path string, dbName string) {
 	}
 	err := createDump(dbName, fullPath)
 	if err != nil {
-		fmt.Printf("Error creating dump for database %s: %v\n", dbName, err)
+		log.Error(fmt.Sprintf("%s: %v\n", dbName, err))
 		return
 	}
-	fmt.Printf("Dump created successfully for database %s: %s\n", dbName, fullPath)
+	log.Info(fmt.Sprintf("Dump created successfully for database %s: %s\n", dbName, fullPath))
 
 	if rename {
 		err = renameDatabaseInDump(fullPath, dbName)
 		if err != nil {
-			fmt.Printf("Error renaming database in dump for database %s: %v\n", dbName, err)
+			log.Error(fmt.Sprintf("Error renaming database in dump for database %s: %v\n", dbName, err))
 			return
 		}
-		fmt.Printf("Database renamed in dump file with prefix 'R4_' for database %s: %s\n", dbName, fullPath)
+		log.Info(fmt.Sprintf("Database renamed in dump file with prefix 'R4_' for database %s: %s\n", dbName, fullPath))
 	}
 
 	if deleteDB {
 		err = dropDatabase(dbName)
 		if err != nil {
-			fmt.Printf("Error dropping database %s: %v\n", dbName, err)
+			log.Error(fmt.Printf("Error dropping database %s: %v\n", dbName, err))
 			return
 		}
-		fmt.Printf("Database dropped: %s\n", dbName)
+		log.Info(fmt.Sprintf("Database dropped: %s\n", dbName))
 	}
 }
 

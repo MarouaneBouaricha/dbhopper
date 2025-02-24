@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/charmbracelet/log"
 	"github.com/spf13/cobra"
 )
 
@@ -35,24 +36,21 @@ var rootCmd = &cobra.Command{
 		}
 
 		if username == "" || password == "" || host == "" {
-			fmt.Println("Error: MySQL connection details (username, password, host) are required.")
-			fmt.Println("Provide them via command-line arguments or environment variables.")
-			os.Exit(1)
+			log.Fatal("MySQL connection details (username, password, host) are required.\nProvide them via command-line arguments or environment variables.")
 		}
 
 		if dbFile == "" && dbName == "" {
-			fmt.Println("Error: Either --file or --name must be provided.")
-			os.Exit(1)
+			log.Fatal("Error: Either --file or --name must be provided.")
 		}
 
 		if destFolder != "" {
 			if _, err := os.Stat(destFolder); os.IsNotExist(err) {
 				err := os.MkdirAll(destFolder, os.ModePerm)
 				if err != nil {
-					fmt.Println("Error creating directory:", err)
+					log.Error(fmt.Sprintf("Error creating directory:", err))
 					return
 				}
-				fmt.Println("Destination folder created:", destFolder)
+				log.Info(fmt.Sprintf("Destination folder created: %s", destFolder))
 			}
 
 		}
@@ -62,7 +60,7 @@ var rootCmd = &cobra.Command{
 			var err error
 			databases, err = readDatabases(dbFile)
 			if err != nil {
-				fmt.Printf("Error reading databases from file: %v\n", err)
+				log.Error(fmt.Sprintf("Error reading databases from file: %v\n", err))
 				os.Exit(1)
 			}
 		} else {
@@ -85,8 +83,7 @@ var rootCmd = &cobra.Command{
 
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 }
 
