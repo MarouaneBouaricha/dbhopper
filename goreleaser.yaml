@@ -1,0 +1,22 @@
+version: 2
+builds:
+  - binary: qcli
+    main: ./
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -mod=vendor
+
+release:
+  prerelease: auto
+
+universal_binaries:
+  - replace: true
+
+checksum:
+  name_template: "checksums.txt"
