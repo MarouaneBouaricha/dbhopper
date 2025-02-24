@@ -32,20 +32,11 @@ func readDatabases(filePath string) ([]string, error) {
 	return databases, nil
 }
 
-func processDatabase(dbName string) {
+func processDatabase(path string, dbName string) {
 	fullPath := fmt.Sprintf("%s.sql", dbName)
-	if destFolder != "" {
-		if _, err := os.Stat(destFolder); os.IsNotExist(err) {
-			err := os.MkdirAll(destFolder, os.ModePerm)
-			if err != nil {
-				fmt.Println("Error creating directory:", err)
-				return
-			}
-			fmt.Println("Destination folder created:", destFolder)
-		}
-		fullPath = filepath.Join(destFolder, fmt.Sprintf("%s.sql", dbName))
+	if path != "" {
+		fullPath = filepath.Join(path, fmt.Sprintf("%s.sql", dbName))
 	}
-
 	err := createDump(dbName, fullPath)
 	if err != nil {
 		fmt.Printf("Error creating dump for database %s: %v\n", dbName, err)
@@ -80,7 +71,11 @@ func createDump(dbName, dumpFile string) error {
 	}
 	defer output.Close()
 	cmd.Stdout = output
-	return cmd.Run()
+	if err := cmd.Run(); err != nil {
+		os.Remove(dumpFile)
+		return fmt.Errorf("failed to create dump for database %s: %v", dbName, err)
+	}
+	return nil
 }
 
 func renameDatabaseInDump(dumpFile, dbName string) error {

@@ -45,6 +45,18 @@ var rootCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
+		if destFolder != "" {
+			if _, err := os.Stat(destFolder); os.IsNotExist(err) {
+				err := os.MkdirAll(destFolder, os.ModePerm)
+				if err != nil {
+					fmt.Println("Error creating directory:", err)
+					return
+				}
+				fmt.Println("Destination folder created:", destFolder)
+			}
+
+		}
+
 		var databases []string
 		if dbFile != "" {
 			var err error
@@ -63,7 +75,7 @@ var rootCmd = &cobra.Command{
 		for _, db := range databases {
 			go func(dbName string) {
 				defer wg.Done()
-				processDatabase(dbName)
+				processDatabase(destFolder, dbName)
 			}(db)
 		}
 
