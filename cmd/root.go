@@ -47,7 +47,7 @@ var rootCmd = &cobra.Command{
 			if _, err := os.Stat(destFolder); os.IsNotExist(err) {
 				err := os.MkdirAll(destFolder, os.ModePerm)
 				if err != nil {
-					log.Error(fmt.Sprintf("Error creating directory:", err))
+					log.Error(fmt.Sprintf("Error creating directory: %v", err))
 					return
 				}
 				log.Info(fmt.Sprintf("Destination folder created: %s", destFolder))
@@ -60,7 +60,7 @@ var rootCmd = &cobra.Command{
 			var err error
 			databases, err = readDatabases(dbFile)
 			if err != nil {
-				log.Error(fmt.Sprintf("Error reading databases from file: %v\n", err))
+				log.Error(fmt.Sprintf("Error reading databases from file: %v", err))
 				os.Exit(1)
 			}
 		} else {

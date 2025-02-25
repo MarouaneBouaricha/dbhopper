@@ -28,4 +28,5 @@ go.work.sum
 
 # misc
 data
-list.txt
+dumped_dropped_renamed.txt
+dbhopper.log
