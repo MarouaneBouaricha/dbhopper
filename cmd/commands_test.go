@@ -1,26 +1,25 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
+	"strings"
 	"testing"
 )
 
 func TestReadDatabases(t *testing.T) {
-	// Create a temporary file for testing
 	tmpFile, err := os.CreateTemp("", "testdb")
 	if err != nil {
 		t.Fatalf("Failed to create temp file: %v", err)
 	}
 	defer os.Remove(tmpFile.Name())
 
-	// Write test data to the temporary file
 	testData := "db1\ndb2\ndb3\n"
 	if _, err := tmpFile.WriteString(testData); err != nil {
 		t.Fatalf("Failed to write to temp file: %v", err)
 	}
 	tmpFile.Close()
 
-	// Test cases
 	tests := []struct {
 		name     string
 		filePath string
@@ -61,7 +60,6 @@ func TestReadDatabases(t *testing.T) {
 	}
 }
 
-// Helper function to create an empty file and return its path
 func createEmptyFile(t *testing.T) string {
 	tmpFile, err := os.CreateTemp("", "emptyfile")
 	if err != nil {
@@ -71,7 +69,6 @@ func createEmptyFile(t *testing.T) string {
 	return tmpFile.Name()
 }
 
-// Helper function to compare two string slices
 func compareStringSlices(a, b []string) bool {
 	if len(a) != len(b) {
 		return false
@@ -82,4 +79,34 @@ func compareStringSlices(a, b []string) bool {
 		}
 	}
 	return true
+}
+
+func TestRenameDatabaseInDump(t *testing.T) {
+	tmpFile, err := os.CreateTemp("", "testdump")
+	if err != nil {
+		t.Fatalf("Failed to create temporary file: %v", err)
+	}
+	defer os.Remove(tmpFile.Name())
+
+	initialContent := "CREATE DATABASE `testdb`;\nUSE `testdb`;"
+	if err := os.WriteFile(tmpFile.Name(), []byte(initialContent), 0644); err != nil {
+		t.Fatalf("Failed to write to temporary file: %v", err)
+	}
+
+	dbName := "testdb"
+	err = renameDatabaseInDump(tmpFile.Name(), dbName)
+	if err != nil {
+		t.Fatalf("renameDatabaseInDump failed: %v", err)
+	}
+
+	updatedContent, err := os.ReadFile(tmpFile.Name())
+	if err != nil {
+		t.Fatalf("Failed to read updated file content: %v", err)
+	}
+
+	expectedContent := strings.ReplaceAll(initialContent, fmt.Sprintf("`%s`", dbName), fmt.Sprintf("`R4_%s`", dbName))
+
+	if string(updatedContent) != expectedContent {
+		t.Errorf("Expected content:\n%s\nGot:\n%s", expectedContent, string(updatedContent))
+	}
 }
